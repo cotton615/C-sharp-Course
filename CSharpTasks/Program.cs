@@ -22,7 +22,6 @@
                     Console.WriteLine("Enter only number!");
                     continue;
                 }
-            }
 
             Console.WriteLine($"Hello, {name}! You are {age} years old.");
         }
