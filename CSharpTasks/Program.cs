@@ -1,315 +1,200 @@
-﻿namespace CSharpTasks
+﻿using System.Drawing;
+using System.Threading;
+
+namespace CSharpTasks
 {
     internal class Program
     {
-        /* Напишите программу, которая запрашивает у пользователя его имя и возраст, 
-        а затем выводит приветственное сообщение, включая имя и возраст пользователя. */
-        static void Task1()
+        static void Shuffle(List<int> List)
         {
-            Console.WriteLine("Enter your name: ");
-            string name = Console.ReadLine();
-
-            Console.WriteLine("Enter your age: ");
-            int age;
-            while (true)
+            int n = List.Count;
+            while (n > 1)
             {
-                if (int.TryParse(Console.ReadLine(), out age))
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Enter only number!");
-                    continue;
-                }
-
-            Console.WriteLine($"Hello, {name}! You are {age} years old.");
-        }
-
-        /* Создайте программу, которая объявляет переменные различных типов данных 
-        (int, double, char, string) и выводит их значения на экран. */
-        static void Task2()
-        {
-            int first = 17;
-            double second = 3.14;
-            char third = 'C';
-            string fourth = "c sharp";
-
-            Console.WriteLine($"Integer: {first},\nDouble: {second},\nChar: {third},\nString: {fourth}\n");
-        }
-
-        /* Напишите программу, которая принимает строку от пользователя и пытается преобразовать её в целое число. 
-        Если преобразование успешно, программа должна вывести удвоенное значение числа. 
-        В противном случае, программа должна вывести сообщение об ошибке. */
-        static void Task3()
-        {
-            Console.WriteLine("Enter number: ");
-            int input;
-            if (int.TryParse(Console.ReadLine(), out input))
-            {
-                Console.WriteLine(input * 2);
-            }
-            else
-            {
-                {
-                    Console.WriteLine("Error: input is not an integer.");
-                }
+                int k = Random.Shared.Next(n--);
+                (List[n], List[k]) = (List[k], List[n]);
             }
         }
 
-        /* Напишите программу, которая принимает от пользователя число и проверяет, 
-        является ли оно положительным, отрицательным или нулём. 
-        Выведите соответствующее сообщение. */
-        static void Task4()
+        static void DisplayBoard(int[,] Board, (int Row, int Col) Card1, (int Row, int Col) Card2, List<(int, int)> Guessed)
         {
-            Console.WriteLine("Enter number: ");
-            int input;
-            while (true)
+            Console.Write("  ");
+            for (int col = 0; col < Board.GetLength(1); col++)
             {
-                if (int.TryParse(Console.ReadLine(), out input))
+                Console.Write($"{(char)('A' + col)} ");
+            }
+
+            Console.WriteLine();
+
+            for (int i = 0; i < Board.GetLength(0); i++)
+            {
+                Console.Write($"{i + 1} ");
+
+                for (int j = 0; j < Board.GetLength(1); j++)
                 {
-                    break;
+                    if (Guessed.Contains((i, j)) ||
+                        (i == Card1.Row && j == Card1.Col)
+                        ||
+                        (i == Card2.Row && j == Card2.Col))
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write($"{Board[i, j]} ");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write($"{Board[i, j]} ");
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Error: input is not a number. Enter again: ");
-                    continue;
-                }
-            }
-            if (input == 0)
-            {
-                Console.WriteLine("Number is equal to 0.");
-            }
-            else if (input > 0)
-            {
-                Console.WriteLine("Number is bigger than zero.");
-            }
-            else if (input < 0)
-            {
-                Console.WriteLine("Number is lesser than zero.");
-            }
-        }
+                Console.ResetColor();
 
-        /*Напишите программу, которая принимает от пользователя номер месяца 
-        и выводит название месяца (например, 1 - Январь, 2 - Февраль и т.д.) 
-        с использованием конструкции switch. */
-        static void Task5()
-        {
-            Console.WriteLine("Enter number of the month: ");
-            int input;
-            while (true)
-            {
-                if (int.TryParse(Console.ReadLine(), out input))
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Error: input is not a number. Enter again: ");
-                    continue;
-                }
-            }
-
-            switch (input)
-            {
-                case 1:
-                    Console.WriteLine("It is January.");
-                    break;
-                case 2:
-                    Console.WriteLine("It is February.");
-                    break;
-                case 3:
-                    Console.WriteLine("It is March.");
-                    break;
-                case 4:
-                    Console.WriteLine("It is April.");
-                    break;
-                case 5:
-                    Console.WriteLine("It is May.");
-                    break;
-                case 6:
-                    Console.WriteLine("It is June.");
-                    break;
-                case 7:
-                    Console.WriteLine("It is July.");
-                    break;
-                case 8:
-                    Console.WriteLine("It is August.");
-                    break;
-                case 9:
-                    Console.WriteLine("It is September.");
-                    break;
-                case 10:
-                    Console.WriteLine("It is October.");
-                    break;
-                case 11:
-                    Console.WriteLine("It is November.");
-                    break;
-                case 12:
-                    Console.WriteLine("It is December.");
-                    break;
-            }
-
-        }
-
-        // Создайте программу, которая выводит все чётные числа от 1 до 100, используя цикл for.
-        static void Task6()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    Console.WriteLine(i);
-                }
-            }
-        }
-
-        // Считает сумму чисел от 1 до 50, используя цикл While
-        static void Task7()
-        {
-            int sum = 0;
-            int i = 0;
-            while (i < 50)
-            {
-                i += 1;
-                sum += i;
-                Console.WriteLine(sum);
-            }
-        }
-
-        // Инициализирует массив из 10 элементов и заполняет его числами от 1 до 10. 
-        // Затем выводит все элементы на экран
-        static void Task8()
-        {
-            int[] arr = new int[10];
-            for (int i=0; i<10; i++)
-            {
-                arr[i] = i + 1;
-            }
-            for (int i=0; i<arr.Length; i++)
-            {
-                Console.WriteLine(arr[i]);
-            }
-        }
-
-        // Напишите программу, которая генерирует случайное число от 1 до 100 и выводит его на экран.
-        // Используйте класс Random для генерации случайного числа.
-        static void Task9()
-        {
-            Console.WriteLine(Random.Shared.Next(1, 101));
-        }
-
-        // Создайте двумерный массив размером 3x3 и заполните его случайными числами от 1 до 10. 
-        // Выведите содержимое массива на экран.
-        static void Task10()
-        {
-            int[,] arr = new int[3, 3];
-            for (int i=0; i<3; i++)         // создание массива
-            {
-                for (int j=0; j<3;  j++)
-                {
-                    arr[i,j] = Random.Shared.Next(1, 11);
-                }
-            }
-
-            for (int i=0; i<3; i++)
-            {
-                for (int j=0; j<3; j++)
-                {
-                    Console.Write($"{arr[i,j]} ");
-                }
                 Console.WriteLine();
             }
-
         }
 
-        // Напишите функцию, которая принимает два целых числа и возвращает их сумму.
-        // Продемонстрируйте использование этой функции в программе.
-        static int user_input()
+        static int[,] CreateBoard((int Rows, int Cols) Size)
         {
-            int input;
+            int[,] board = new int[Size.Rows, Size.Cols];
+            int PairsCount = (Size.Rows * Size.Cols) / 2;
+            List<int> values = new List<int>();
+
+            for (int i = 0; i < PairsCount; i++)
+            {
+                values.Add(i);
+                values.Add(i);
+            }
+
+            Shuffle(values);
+            int index = 0;
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
+                {
+                    board[i, j] = values[index++];
+                }
+            }
+
+            return board;
+        }
+
+        static (int, int) EnterSize()
+        {
+            (int Rows, int Cols) Size;
+            string[] Input = Console.ReadLine().Split(" ");
+
             while (true)
             {
-                if (int.TryParse(Console.ReadLine(), out input))
+                if (Input.Length == 2
+                    &&
+                    int.TryParse(Input[0].Trim(), out int Rows)
+                    &&
+                    int.TryParse(Input[1].Trim(), out int Cols))
                 {
-                    return input;
+                    if ((Rows * Cols) % 2 == 0)
+                    {
+                        Size = (Rows, Cols);
+                        return Size;
+                    }
+                    else
+                    {
+                        Console.WriteLine("ERROR: Enter numbers in a way, to make the product even.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Enter only number!");
-                    continue;
+                    Console.WriteLine("ERROR: Input is not a number.");
                 }
             }
         }
-        static void Task11() 
-        {
-            Console.WriteLine("Enter first number: ");
-            int input_1 = user_input();
-            Console.WriteLine("Enter second number: ");
-            int input_2 = user_input();
-            Console.WriteLine($"The sum: {input_1 + input_2}");
-        }
 
-        // Напишите программу, которая создает список (List<int>) и заполняет его 5 случайными числами.
-        // Затем программа должна вывести все числа на экран и их сумму.
-        static void Task12()
+        static (int, int) EnterCoordinateForCard((int Rows, int Cols) Size)
         {
-            List<int> arr = new List<int>();
-            int sum = 0;
-            for (int i = 0; i < 5; i++)
-            {
-                int number = Random.Shared.Next(0, 11);
-                arr.Add(number);
-                sum += number;
-            }
-            for (int i = 0; i < 5; i++)
-            {
-                Console.Write($"{arr[i]} ");
-            }
-            Console.WriteLine($"\nSum = {sum}");
-        }
+            (int Col, int Row) Indices;
 
-        /* Каждый солнечный день улитка, сидящая на дереве, поднимается вверх на 5 см, а каждый пасмурный день опускается вниз на 3 см.
-         * В начале наблюдения улитка находилась на расстоянии А см от земли на 5-метровом дереве. 
-         * Имеется 30-элементный массив, содержащий сведения о том, был ли соответствующий день наблюдения пасмурным или солнечным. 
-         * Написать программу, определяющую местоположение улитки к концу 30-го дня наблюдения. */
-        static void Snail()
-        {
-            bool[] sunny = new bool[30];
-            int distance;
-            Console.WriteLine("Enter distance in the beggining of observation: ");
             while (true)
             {
-                if (int.TryParse(Console.ReadLine(), out distance))
+                string[] Coordinate = Console.ReadLine().ToLower().Trim().Split(" ");
+
+                if (char.TryParse(Coordinate[0], out char CharCol) && int.TryParse(Coordinate[1], out int Row))
                 {
-                    break;
+                    int Col = CharCol - 'a';
+                    if (Row <= 0 || Row > Size.Rows || Col < 0 || Col >= Size.Cols)
+                    {
+                        Console.WriteLine("ERROR: Coordinate is out of range.");
+                        continue;
+                    } 
+                    else
+                    {
+                        Indices = (Row - 1, Col);
+                        return Indices;
+                    }
                 }
-                else
+
+                else 
                 {
-                    Console.WriteLine("Enter only number!");
-                    continue;
-                }
-            }
-            for (int i = 0; i < sunny.Length; i++)
-            {
-                sunny[i] = Random.Shared.Next(0, 2) == 1;
-                Console.Write($"{sunny[i]} ");
-            }
-            for (int i = 0; i < sunny.Length; i++)
-            {
-                if (sunny[i])
-                {
-                    distance += 5;
-                } else
-                {
-                    distance -= 3;
+                    Console.WriteLine("ERROR: Invalid Input. Enter in format: (A 1)");
                 }
             }
-            Console.WriteLine($"\nIn 30 days snail climbed for {distance} cm.");
         }
+
         static void Main()
-        {
-            Snail();
+        {   
+            int FoundPairs = 0;
+            Console.WriteLine("Welcome to the 'Guess the Pair' Game!");
+            Console.WriteLine("Let's create a board. Enter dimensions (rows, cols): ");
+
+            (int Rows, int Cols) Size = EnterSize();
+            int[,] Board = CreateBoard(Size);
+            Console.Clear();
+            List<(int Row, int Col)> Guessed = new List<(int, int)>();
+
+            while (FoundPairs < (Size.Rows * Size.Cols) / 2) 
+            {
+                DisplayBoard(Board, (-1, -1), (-1, -1), Guessed);
+
+                Console.WriteLine("Enter the coordinates of 1st card: ");
+                (int Row, int Col) Card1 = EnterCoordinateForCard(Size);
+
+                Console.Clear();
+                DisplayBoard(Board, Card1, (-1, -1), Guessed);
+
+                Console.WriteLine("Enter the coordinates of 2nd card: ");
+                (int Row, int Col) Card2 = EnterCoordinateForCard(Size);
+                
+                Console.Clear();
+                DisplayBoard(Board, Card1, Card2, Guessed);
+
+                if (Card1 == Card2)
+                {
+                    Console.WriteLine("ERROR: The coordinates of two cards MUST be different.");
+                    Thread.Sleep(1000); 
+                    Console.Clear();
+
+                    continue;
+                } else if (Guessed.Contains(Card1) || Guessed.Contains(Card2)) 
+                {
+                    Console.WriteLine("ERROR: The chosen card are already guessed.");
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                    continue;                
+                }
+
+                if (Board[Card1.Row, Card1.Col] == Board[Card2.Row, Card2.Col])
+                {
+                    Console.WriteLine("the cards are SAME");
+                    FoundPairs += 1;
+                    Guessed.Add((Card1.Row, Card1.Col));
+                    Guessed.Add((Card2.Row, Card2.Col));
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.WriteLine("the cards are DIFFERENT");
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                }
+            }
+            Console.WriteLine("YOU WON!");
         }
     }
 }
