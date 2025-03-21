@@ -1,200 +1,83 @@
-﻿using System.Drawing;
-using System.Threading;
-
-namespace CSharpTasks
+﻿namespace CSharpTasks
 {
     internal class Program
     {
-        static void Shuffle(List<int> List)
-        {
-            int n = List.Count;
-            while (n > 1)
-            {
-                int k = Random.Shared.Next(n--);
-                (List[n], List[k]) = (List[k], List[n]);
+      /*Задание: Реализация метода TryGetValue для массива
+        Реализуйте метод TryGetValue, который выполняет линейный поиск элемента в массиве целых чисел.
+
+        Метод должен соответствовать следующим требованиям:
+            • Принимает на вход массив целых чисел и искомое число.
+            • Если элемент найден, метод возвращает true и инициализирует out-параметр индексом найденного элемента.
+            • Если элемент не найден, метод возвращает false, а out-параметр получает значение -1.
+            • Поиск должен выполняться линейно (без встроенных методов поиска).
+            • Задокументировать метод summary комментарием.*/
+
+        /// <summary>
+        ///  Finds the element in the array.
+        /// </summary>
+        /// <param name="arr">Array, in which seeks.</param>
+        /// <param name="seek">Element, which it seeks.</param>
+        /// <param name="index">The index, which will be returned.</param>
+        /// <returns>Index in case if element is found and returns -1 if element is not found.</returns>
+        static bool TryGetValue(int[] arr, int seek, out int index) {
+            for (int i = 0; i < arr.Length; i++) {
+
+                if (arr[i] == seek) {
+                    index = i;
+                    Console.WriteLine($"Element {seek} is found.");
+                    return true;
+                } 
             }
+            Console.WriteLine($"Element {seek} isn't found in the given array");
+            index = -1;
+            return false;
         }
 
-        static void DisplayBoard(int[,] Board, (int Row, int Col) Card1, (int Row, int Col) Card2, List<(int, int)> Guessed)
-        {
-            Console.Write("  ");
-            for (int col = 0; col < Board.GetLength(1); col++)
-            {
-                Console.Write($"{(char)('A' + col)} ");
+
+      /*Задание: Реализация метода FindIndex для массива
+
+        Реализуйте метод FindIndex, который выполняет линейный поиск элемента в массиве целых чисел.
+
+        Метод должен соответствовать следующим требованиям:
+            • Принимает на вход массив целых чисел и искомое число.
+            • Если элемент найден, метод возвращает его индекс.
+            • Если элемент не найден, метод выбрасывает исключение InvalidOperationException с сообщением "Элемент не найден в массиве".
+            • Поиск должен выполняться линейно (без встроенных методов поиска).
+            • Метод должен быть задокументирован с помощью summary-комментария.*/
+
+        /// <summary>
+        /// Finds index of the sought element.
+        /// </summary>
+        /// <param name="arr">Array, in which seek.s</param>
+        /// <param name="seek">Element, index of which it must find.</param>
+        /// <returns>Index of the sought element.</returns>
+        /// <exception cref="InvalidOperationException">Throws exception, if element is not found.</exception>
+        static int FindIndex(int[] arr, int seek) {
+            for (int i = 0; i < arr.Length; i++) {
+                if (arr[i] == seek) {
+                    return i;
+                } 
             }
-
-            Console.WriteLine();
-
-            for (int i = 0; i < Board.GetLength(0); i++)
-            {
-                Console.Write($"{i + 1} ");
-
-                for (int j = 0; j < Board.GetLength(1); j++)
-                {
-                    if (Guessed.Contains((i, j)) ||
-                        (i == Card1.Row && j == Card1.Col)
-                        ||
-                        (i == Card2.Row && j == Card2.Col))
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write($"{Board[i, j]} ");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.Write($"{Board[i, j]} ");
-                    }
-                }
-                Console.ResetColor();
-
-                Console.WriteLine();
-            }
-        }
-
-        static int[,] CreateBoard((int Rows, int Cols) Size)
-        {
-            int[,] board = new int[Size.Rows, Size.Cols];
-            int PairsCount = (Size.Rows * Size.Cols) / 2;
-            List<int> values = new List<int>();
-
-            for (int i = 0; i < PairsCount; i++)
-            {
-                values.Add(i);
-                values.Add(i);
-            }
-
-            Shuffle(values);
-            int index = 0;
-            for (int i = 0; i < board.GetLength(0); i++)
-            {
-                for (int j = 0; j < board.GetLength(1); j++)
-                {
-                    board[i, j] = values[index++];
-                }
-            }
-
-            return board;
-        }
-
-        static (int, int) EnterSize()
-        {
-            (int Rows, int Cols) Size;
-            string[] Input = Console.ReadLine().Split(" ");
-
-            while (true)
-            {
-                if (Input.Length == 2
-                    &&
-                    int.TryParse(Input[0].Trim(), out int Rows)
-                    &&
-                    int.TryParse(Input[1].Trim(), out int Cols))
-                {
-                    if ((Rows * Cols) % 2 == 0)
-                    {
-                        Size = (Rows, Cols);
-                        return Size;
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR: Enter numbers in a way, to make the product even.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("ERROR: Input is not a number.");
-                }
-            }
-        }
-
-        static (int, int) EnterCoordinateForCard((int Rows, int Cols) Size)
-        {
-            (int Col, int Row) Indices;
-
-            while (true)
-            {
-                string[] Coordinate = Console.ReadLine().ToLower().Trim().Split(" ");
-
-                if (char.TryParse(Coordinate[0], out char CharCol) && int.TryParse(Coordinate[1], out int Row))
-                {
-                    int Col = CharCol - 'a';
-                    if (Row <= 0 || Row > Size.Rows || Col < 0 || Col >= Size.Cols)
-                    {
-                        Console.WriteLine("ERROR: Coordinate is out of range.");
-                        continue;
-                    } 
-                    else
-                    {
-                        Indices = (Row - 1, Col);
-                        return Indices;
-                    }
-                }
-
-                else 
-                {
-                    Console.WriteLine("ERROR: Invalid Input. Enter in format: (A 1)");
-                }
-            }
+            throw new InvalidOperationException($"Element {seek} isn't found in the given array.");
         }
 
         static void Main()
-        {   
-            int FoundPairs = 0;
-            Console.WriteLine("Welcome to the 'Guess the Pair' Game!");
-            Console.WriteLine("Let's create a board. Enter dimensions (rows, cols): ");
-
-            (int Rows, int Cols) Size = EnterSize();
-            int[,] Board = CreateBoard(Size);
-            Console.Clear();
-            List<(int Row, int Col)> Guessed = new List<(int, int)>();
-
-            while (FoundPairs < (Size.Rows * Size.Cols) / 2) 
-            {
-                DisplayBoard(Board, (-1, -1), (-1, -1), Guessed);
-
-                Console.WriteLine("Enter the coordinates of 1st card: ");
-                (int Row, int Col) Card1 = EnterCoordinateForCard(Size);
-
-                Console.Clear();
-                DisplayBoard(Board, Card1, (-1, -1), Guessed);
-
-                Console.WriteLine("Enter the coordinates of 2nd card: ");
-                (int Row, int Col) Card2 = EnterCoordinateForCard(Size);
-                
-                Console.Clear();
-                DisplayBoard(Board, Card1, Card2, Guessed);
-
-                if (Card1 == Card2)
-                {
-                    Console.WriteLine("ERROR: The coordinates of two cards MUST be different.");
-                    Thread.Sleep(1000); 
-                    Console.Clear();
-
-                    continue;
-                } else if (Guessed.Contains(Card1) || Guessed.Contains(Card2)) 
-                {
-                    Console.WriteLine("ERROR: The chosen card are already guessed.");
-                    Thread.Sleep(1000);
-                    Console.Clear();
-                    continue;                
-                }
-
-                if (Board[Card1.Row, Card1.Col] == Board[Card2.Row, Card2.Col])
-                {
-                    Console.WriteLine("the cards are SAME");
-                    FoundPairs += 1;
-                    Guessed.Add((Card1.Row, Card1.Col));
-                    Guessed.Add((Card2.Row, Card2.Col));
-                    Console.Clear();
-                }
-                else
-                {
-                    Console.WriteLine("the cards are DIFFERENT");
-                    Thread.Sleep(1000);
-                    Console.Clear();
-                }
+        {
+            int[] arr = new int[5];
+            for (int i = 0; i < arr.Length; i++) {
+                arr[i] = Random.Shared.Next(0, 11);
+                Console.Write($"{arr[i]} ");
             }
-            Console.WriteLine("YOU WON!");
+            Console.WriteLine();
+
+            try {
+                int result = FindIndex(arr, 5);
+                Console.WriteLine($"Index of the sought element: {result}.");
+            } catch (InvalidOperationException e) {
+                Console.WriteLine(e.Message);
+            }
+
+            TryGetValue(arr, 5, out int index);
         }
     }
 }
