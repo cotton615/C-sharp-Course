@@ -29,6 +29,17 @@
                 Console.Write($"{result[i]} ");
             }
             Console.WriteLine($"\n\nTest of ==: {myList1 == myList2} and !=: {myList1 != myList2}");
-        }
+
+            LinkedList myLinkedList = new LinkedList(10);
+
+            Node current = myLinkedList.head;
+
+            while (current != null) {
+                Console.Write($"{current.value} ");
+                current = current.next;
+            }
+
+
+       }
     }
 }
