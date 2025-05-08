@@ -1,14 +1,15 @@
 ﻿namespace CSharpTasks {
     public class Node {
-        private int _value;
-        private Node _next;
+        // Getters and Setters
+        public int Value { get; set; }
 
-        public int value => _value;
-        public Node next => _next;
+        public Node? Next { get; set; } = null;
+        public Node? Previous { get; set; } = null;
 
-        public Node(int value, Node next) {
-            this._value = value;
-            this._next = next;
+
+        // Constructors
+        public Node(int value) {
+            Value = value;
         }
     }
 }

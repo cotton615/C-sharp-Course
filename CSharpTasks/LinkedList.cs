@@ -1,20 +1,16 @@
 ﻿namespace CSharpTasks {
     public class LinkedList {
-        private Node _head;
 
-        // Getters and setters
-        public int value => _head.value;
-        public Node head => _head;
-        
+        // Getters and Setters
+        private Node? _head { get; set; }
+        private Node? _tail { get; set; }
+
+        public int Count { get; private set; }
+        public Node? Head => _head;
+        public Node? Last => _tail;
+
+
         // Constructors
-        /// <summary>
-        /// Creates 1 node with given value and a reference to the next node.
-        /// </summary>
-        /// <param name="value">Value, which element contains.</param>
-        /// <param name="next">Reference to the next node.</param>
-        public LinkedList(int value, Node next) {
-            _head = new Node(value, next);
-        }
         /// <summary>
         /// Creates a list of n-elements.
         /// </summary>
@@ -25,12 +21,70 @@
                 throw new ArgumentOutOfRangeException("Count must be a positive integer.");
             }
 
-            Node lastElement = null;
-            for (int i = count; i > 0; i--) { 
-                Node newElement = new Node(i, lastElement);
-                lastElement = newElement;
+            Node? previousNode = null;
+            for (int i = 1; i < count + 1; i++) { 
+                Node newNode = new Node(i);
+
+                if (previousNode != null) {
+                    previousNode.Next = newNode;
+                    newNode.Previous = previousNode;
+                } else {
+                    _head = newNode;
+                }
+
+                previousNode = newNode;
             }
-            _head = lastElement;
+            _tail = previousNode;
+            Count = count;
+        }
+        
+
+        // Methods
+        /// <summary>
+        /// Adds a Node with a given Value to the end of the Linked List.
+        /// </summary>
+        /// <param name="value">Value, given to the node.</param>
+        public void Add(int value) {
+            if (_head is null) {
+                _head = new Node(value);
+                _tail = _head;
+                _head.Previous = null;
+            } else {
+                Node newNode = new Node(value);
+                newNode.Previous = _tail;
+                newNode.Next = null;
+                _tail.Next = newNode;
+                _tail = newNode;
+            }
+            Count++;
+        }
+
+        public void Remove(int index) {
+            if (index < 0 || index >= Count) { 
+                throw new ArgumentOutOfRangeException("Index is out of bounds of the Linked List.");
+            }
+
+            if (index == 0) {
+                _head = _head.Next;
+                if (_head is not null) { 
+                    _head.Previous = null;
+                }
+            } else {
+                Node? current = _head.Next;
+                Node? previous = _head;
+
+                for (int i=1; i < index; i++) {
+                    previous = current;
+                    current = current.Next;
+                }
+                previous.Next = current.Next;
+                if (current.Next is not null) {
+                    current.Next.Previous = previous;
+                } else {
+                    _tail = previous;
+                }
+            }
+            Count--;
         }
     }
 }
