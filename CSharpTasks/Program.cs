@@ -4,13 +4,9 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 
 namespace CSharpTasks {
-
     internal class Program {
-        /// <summary>
-        /// Displays all of the possible options of the program.
-        /// </summary>
-        /// <returns>Returns an answer from the user.</returns>
-        static string DisplayOptions() {
+
+        static void DisplayMenu() {
             Console.WriteLine("--- Интерактивный словарь ---");
             Console.WriteLine("Выберите действие:\n");
             Console.WriteLine("1. Добавить/обновить термин");
@@ -19,207 +15,110 @@ namespace CSharpTasks {
             Console.WriteLine("4. Показать все термины и определения");
             Console.WriteLine("5. Показать количество терминов");
             Console.WriteLine("6. Выход");
-
-            string enter = Console.ReadLine();
-            return enter;
         }
 
-        /// <summary>
-        /// Updates term, in case if it already exists.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <param name="termName">Term name, that needs to be written to the dictionary.</param>
-        /// <param name="termDefinition">Definition of the term.</param>
-        static void UpdateTerm(Dictionary<string, string> Terms, string termName, string termDefinition) {
-            while (true) {
-                string option = Console.ReadLine();
-                if (option.ToLower() == "да") {
-                    Terms[termName] = termDefinition;
-                    break;
-                } else if (option.ToLower() == "нет") {
-                    break;
-                } else {
-                    continue;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds term into the dictionary.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <param name="termName">Term name, that needs to be written to the dictionary.</param>
-        /// <param name="termDefinition">Definition of the term.</param>
-        /// <exception cref="ArgumentNullException">Throws ArgumentNullException if term already exists in the dictionary.</exception>
-        static void AddTerm(Dictionary<string, string> Terms, string termName, string termDefinition) {
-            if (Terms.ContainsKey(termName) && Terms[termName] == termDefinition) {
-                return;
-            } 
-
-            if (Terms.ContainsKey(termName)) {
-                throw new Exception("Такой термин уже существует. Перезаписать? (Да / Нет)");
-            }
-
-            Terms.Add(termName, termDefinition);
-        }
-
-        /// <summary>
-        /// Finds term in the dictionary by it's name.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <param name="termName">Term name, that needs to be found.</param>
-        /// <exception cref="ArgumentNullException">Throws ArgumentNullException if term is not found.</exception>
-        static void FindTerm(Dictionary<string, string> Terms, string termName) {
-            if (!Terms.ContainsKey(termName)) {
-                throw new Exception("Термин не найден");
-            }
-
-            Console.WriteLine($"Определение: [{Terms[termName]}]");
-            Console.WriteLine("\n\n\n");
-        }
-
-        /// <summary>
-        /// Deletes term by it's name.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <param name="termName">Term name, that needs to be deleted.</param>
-        /// <exception cref="ArgumentNullException">Throws ArgumentNullException if term is not found.</exception>
-        static void DeleteTerm(Dictionary<string, string> Terms, string termName) {
-            if (!Terms.ContainsKey(termName)) {
-                throw new Exception("Термин не найден");
-            }
-            Terms.Remove(termName);
-        }
-
-        /// <summary>
-        /// Displays all terms of the dictionary.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <exception cref="ArgumentNullException">Throws ArgumentNullException if dictionary is empty.</exception>
-        static void DisplayAllTerms(Dictionary<string, string> Terms) {
-            if (Terms.Count == 0) {
-                throw new Exception("Словарь пуст.");
-            }
-
-            string[] keys = new string[Terms.Count];
-            int i = 0;
-
-            foreach (var key in Terms.Keys) {
-                keys[i] = key;
-                i++;
-            }
-
-            for (int j = 0; j < keys.Length; j++) {
-                Console.WriteLine($"{keys[j]}: [{Terms[keys[j]]}]");
-            }
-            Console.WriteLine("\n\n\n");
-        }
-
-        /// <summary>
-        /// Counts all of the terms in the dictionary.
-        /// </summary>
-        /// <param name="Terms">Dictionary, that contains all terms.</param>
-        /// <returns>Return count of all terms in the dictionary.</returns>
-        static int CountAllTerms(Dictionary<string, string> Terms) {
-            int count = 0;
-
-            foreach (var key in Terms.Keys) {
-                count++;
-            }
-
-            return count;
-        }
-
-       static void Main() {
-            Dictionary<string, string> Terms = new Dictionary<string, string>();
+        static void Main() {
+            TermDict termDict = new TermDict();
 
             while (true) {
-                string enter = DisplayOptions();
+                DisplayMenu();
+                string enter = Console.ReadLine().Trim();
 
-                if (int.TryParse(enter.Trim(), out int option) && option > 0 && option <= 6) {
+                if (int.TryParse(enter, out int option) && option > 0 && option <= 6) {
                     switch (option) {
-                        case 1:
-                            {
+                        case 1: 
+                            { 
+                                Console.Clear();
+                                Console.WriteLine("Введите название термина, который хотите добавить: ");
+                                string termName = Console.ReadLine().Trim();
+
+                                Console.WriteLine("Введите определение для этого термина:");
+                                string termDefinition = Console.ReadLine().Trim();
+
                                 Console.Clear();
 
-                                Console.WriteLine("Введите название термина: ");
-                                string termName = Console.ReadLine();
-                                Console.WriteLine("Введите определение термина: ");
-                                string termDefinition = Console.ReadLine();
-
-                                if (termName.Trim() == "" || termDefinition.Trim() == "") {
-                                    Console.WriteLine("Термин и его определение не могут быть пустыми.");
+                                if ((termName == "") || (termDefinition == "")) {
+                                    Console.Clear();
+                                    Console.WriteLine("Имя или определение термина не могут быть пустыми.");
                                     Thread.Sleep(1000);
                                     Console.Clear();
-                                    continue;
+                                } else {
+                                    try {
+                                        termDict.Add(termName, termDefinition);
+                                        Console.WriteLine("Термин успешно добавлен.");
+                                        Thread.Sleep(1000);
+                                        Console.Clear();
+                                    } 
+                                    catch (ArgumentException ex) {
+                                        Console.WriteLine(ex.Message);
+                                        Thread.Sleep(1000);
+                                        Console.Clear();
+                                    } 
+                                    catch (InvalidOperationException ex) {
+                                        Console.WriteLine(ex.Message);
+                                        Console.WriteLine("Перезаписать? да / нет");
+
+                                        string rewriteOption = Console.ReadLine().Trim().ToLower();
+                                        if (rewriteOption == "да") {
+                                            termDict.Update(termName, termDefinition);
+                                            Console.WriteLine("Определение обновлено.");
+                                            Thread.Sleep(1000);
+                                            Console.Clear();
+                                        } else {
+                                            Console.Clear();
+                                        }
+                                    }
                                 }
-                                try {
-                                    AddTerm(Terms, termName.Trim(), termDefinition.Trim());
-                                } catch (Exception ex) {
-                                    Console.Clear();
-                                    Console.WriteLine($"{ex.Message}");
-                                    UpdateTerm(Terms, termName.Trim(), termDefinition.Trim());
-                                }
-                                Console.Clear();
                                 continue;
                             }
-
                         case 2: 
-                            {
+                            { 
                                 Console.Clear();
-                                Console.WriteLine("Введите термин, определение которого желаете найти: ");
-                                string termName = Console.ReadLine();
+                                Console.WriteLine("Введите имя термина, который желаете найти: ");
+                                string termName = Console.ReadLine().Trim();
                                 try {
-                                    FindTerm(Terms, termName.Trim());
-                                } catch (Exception ex) {
+                                    Console.WriteLine($"[{termDict.Find(termName)}]");
+                                } 
+                                catch (KeyNotFoundException ex) {
                                     Console.Clear();
-                                    Console.WriteLine($"{ex.Message}");
+                                    Console.WriteLine(ex.Message);
                                     Thread.Sleep(1000);
                                     Console.Clear();
                                 }
-                            
                                 continue;
                             }
                         case 3: 
                             {
                                 Console.Clear();
-                                Console.WriteLine("Введите термин, который желаете удалить из словаря: ");
-                                string termName = Console.ReadLine();
-                                try {
-                                    DeleteTerm(Terms, termName.Trim());
-                                } catch (Exception ex) {
-                                    Console.Clear();
-                                    Console.WriteLine($"{ex.Message}");
+                                Console.WriteLine("Введите имя термина, который желаете удалить: ");
+                                string termName = Console.ReadLine().Trim();
+
+                                if (termDict.Remove(termName)) {
+                                    Console.WriteLine("Термин успешно удалён.");
                                     Thread.Sleep(1000);
                                     Console.Clear();
                                 }
-
+                                Console.Clear();
                                 continue;
                             }
                         case 4:
                             Console.Clear();
+                            List<KeyValuePair<string, string>> terms = termDict.GetAllTerms();
 
-                            try {
-                                DisplayAllTerms(Terms);
-                            } catch (Exception ex) {
-                                Console.Clear();
-                                Console.WriteLine($"{ex.Message}");
-                                Thread.Sleep(1000);
-                                Console.Clear();
+                            for (int i = 0; i < terms.Count; i++) {
+                                Console.WriteLine($"{terms[i].Key}: [{terms[i].Value}]");
                             }
+
                             continue;
                         case 5:
                             Console.Clear();
-                            Console.WriteLine($"Количество записей - {CountAllTerms(Terms)}.");
-                            Thread.Sleep(1000);
-                            Console.Clear();
+                            Console.WriteLine($"Всего терминов: {termDict.Count()}");
                             continue;
                         case 6:
                             Console.Clear();
                             Console.WriteLine("Выход...");
                             return;
                     }
-                    continue;
                 } else {
                     Console.Clear();
                     Console.WriteLine("Пожалуйста, выберите действие из списка.");
