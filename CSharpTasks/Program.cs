@@ -1,131 +1,70 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
+﻿using System;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
-namespace CSharpTasks {
+namespace EgorLesson {
     internal class Program {
 
-        static void DisplayMenu() {
-            Console.WriteLine("--- Интерактивный словарь ---");
-            Console.WriteLine("Выберите действие:\n");
-            Console.WriteLine("1. Добавить/обновить термин");
-            Console.WriteLine("2. Найти определение термина");
-            Console.WriteLine("3. Удалить термин");
-            Console.WriteLine("4. Показать все термины и определения");
-            Console.WriteLine("5. Показать количество терминов");
-            Console.WriteLine("6. Выход");
-        }
+        static int Search(List<KeyValuePair<string, double>> arr, string productName) {
+            int low = 0;
+            int high = arr.Count - 1;
 
-        static void Main() {
-            TermDict termDict = new TermDict();
+            while (low <= high) {
+                int mid = (low + high) / 2;
+                int compare = string.CompareOrdinal(arr[mid].Key, productName);
 
-            while (true) {
-                DisplayMenu();
-                string enter = Console.ReadLine().Trim();
-
-                if (int.TryParse(enter, out int option) && option > 0 && option <= 6) {
-                    switch (option) {
-                        case 1: 
-                            { 
-                                Console.Clear();
-                                Console.WriteLine("Введите название термина, который хотите добавить: ");
-                                string termName = Console.ReadLine().Trim();
-
-                                Console.WriteLine("Введите определение для этого термина:");
-                                string termDefinition = Console.ReadLine().Trim();
-
-                                Console.Clear();
-
-                                if ((termName == "") || (termDefinition == "")) {
-                                    Console.Clear();
-                                    Console.WriteLine("Имя или определение термина не могут быть пустыми.");
-                                    Thread.Sleep(1000);
-                                    Console.Clear();
-                                } else {
-                                    try {
-                                        termDict.Add(termName, termDefinition);
-                                        Console.WriteLine("Термин успешно добавлен.");
-                                        Thread.Sleep(1000);
-                                        Console.Clear();
-                                    } 
-                                    catch (ArgumentException ex) {
-                                        Console.WriteLine(ex.Message);
-                                        Thread.Sleep(1000);
-                                        Console.Clear();
-                                    } 
-                                    catch (InvalidOperationException ex) {
-                                        Console.WriteLine(ex.Message);
-                                        Console.WriteLine("Перезаписать? да / нет");
-
-                                        string rewriteOption = Console.ReadLine().Trim().ToLower();
-                                        if (rewriteOption == "да") {
-                                            termDict.Update(termName, termDefinition);
-                                            Console.WriteLine("Определение обновлено.");
-                                            Thread.Sleep(1000);
-                                            Console.Clear();
-                                        } else {
-                                            Console.Clear();
-                                        }
-                                    }
-                                }
-                                continue;
-                            }
-                        case 2: 
-                            { 
-                                Console.Clear();
-                                Console.WriteLine("Введите имя термина, который желаете найти: ");
-                                string termName = Console.ReadLine().Trim();
-                                try {
-                                    Console.WriteLine($"[{termDict.Find(termName)}]");
-                                } 
-                                catch (KeyNotFoundException ex) {
-                                    Console.Clear();
-                                    Console.WriteLine(ex.Message);
-                                    Thread.Sleep(1000);
-                                    Console.Clear();
-                                }
-                                continue;
-                            }
-                        case 3: 
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Введите имя термина, который желаете удалить: ");
-                                string termName = Console.ReadLine().Trim();
-
-                                if (termDict.Remove(termName)) {
-                                    Console.WriteLine("Термин успешно удалён.");
-                                    Thread.Sleep(1000);
-                                    Console.Clear();
-                                }
-                                Console.Clear();
-                                continue;
-                            }
-                        case 4:
-                            Console.Clear();
-                            List<KeyValuePair<string, string>> terms = termDict.GetAllTerms();
-
-                            for (int i = 0; i < terms.Count; i++) {
-                                Console.WriteLine($"{terms[i].Key}: [{terms[i].Value}]");
-                            }
-
-                            continue;
-                        case 5:
-                            Console.Clear();
-                            Console.WriteLine($"Всего терминов: {termDict.Count()}");
-                            continue;
-                        case 6:
-                            Console.Clear();
-                            Console.WriteLine("Выход...");
-                            return;
-                    }
-                } else {
-                    Console.Clear();
-                    Console.WriteLine("Пожалуйста, выберите действие из списка.");
-                    Thread.Sleep(1000);
-                    Console.Clear();
+                if (compare == 0) {
+                    return mid;
+                } else if (compare < 0) {
+                    low = mid + 1;
+                } else if (compare > 0) {
+                    high = mid - 1;
                 }
             }
+
+            throw new ArgumentException("Element not found.");
+        }
+
+
+        static void Main(string[] args) {
+            Console.WriteLine("Тестируем List");
+
+            var productList = new List<KeyValuePair<string, double>>();
+            for (var i = 0; i < 1_000_000; i++) {
+                productList.Add(new KeyValuePair<string, double>($"SKU-{i}", i * 1.5));
+            }
+
+            productList.Add(new KeyValuePair<string, double>("SKU-TARGET", 999.99));
+
+            var stopwatch = new Stopwatch();
+            
+            stopwatch.Start();
+            KeyValuePair<string, double> foundItem = new KeyValuePair<string, double>("NOT-FOUND", 0);
+
+            string productName = "SKU-TARGET";
+            int index = Search(productList, productName);
+            foundItem = productList[index];
+            
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Найден товар: {foundItem.Key} с ценой {foundItem.Value}");
+            Console.WriteLine($"Время поиска: {stopwatch.Elapsed.TotalMilliseconds} мс\n");
+
+            Console.WriteLine("Тестируем Dictionary");
+            var productDictionary = new Dictionary<string, double>();
+            for (int i = 0; i < 1_000_000; i++) {
+                productDictionary.Add($"SKU-{i}", i * 1.5);
+            }
+            productDictionary.Add("SKU-TARGET", 999.99);
+
+            stopwatch.Restart();
+
+            double price = productDictionary["SKU-TARGET"];
+            stopwatch.Stop();
+
+            Console.WriteLine($"Найден товар: SKU-TARGET с ценой {price}");
+            Console.WriteLine($"Время поиска: {stopwatch.Elapsed.TotalMilliseconds} мс\n");
         }
     }
 }
