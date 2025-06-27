@@ -1,70 +1,40 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using CSharpTasks;
 
 namespace EgorLesson {
+
+
     internal class Program {
-
-        static int Search(List<KeyValuePair<string, double>> arr, string productName) {
-            int low = 0;
-            int high = arr.Count - 1;
-
-            while (low <= high) {
-                int mid = (low + high) / 2;
-                int compare = string.CompareOrdinal(arr[mid].Key, productName);
-
-                if (compare == 0) {
-                    return mid;
-                } else if (compare < 0) {
-                    low = mid + 1;
-                } else if (compare > 0) {
-                    high = mid - 1;
-                }
+        static void DisplayDictionary(Dictionary<Car, List<string>> carsAndOwners) {
+            foreach (var car in carsAndOwners) {
+                Console.WriteLine($"{car.Key}: {string.Join(", ", car.Value)}");
             }
-
-            throw new ArgumentException("Element not found.");
         }
 
+        static void Main() {
+            Car car1 = new Car("Ford", "Mustang", ["Michael", "Jack"]);
+            Car car2 = new Car("Toyota", "Supra", ["John"]);
+            Dictionary<Car, List<string>> carsAndOwners = new Dictionary<Car, List<string>>();
 
-        static void Main(string[] args) {
-            Console.WriteLine("Тестируем List");
+            Console.WriteLine(car1.ToString());
+            Console.WriteLine(car2.ToString());
+            Console.WriteLine($"Car1 Equals car2: {car1.Equals(car2)}. car1 Hash Code: {car1.GetHashCode()}");
+            Console.WriteLine($"Car2 Equals car1: {car2.Equals(car1)}. car2 Hash Code: {car2.GetHashCode()}");
+                
+            carsAndOwners.Add(car1, car1.PrevOwners);
+            carsAndOwners.Add(car2, car2.PrevOwners);
+            Console.WriteLine("\nAdded 2 cars to the dictionary.");
 
-            var productList = new List<KeyValuePair<string, double>>();
-            for (var i = 0; i < 1_000_000; i++) {
-                productList.Add(new KeyValuePair<string, double>($"SKU-{i}", i * 1.5));
-            }
+            DisplayDictionary(carsAndOwners);
 
-            productList.Add(new KeyValuePair<string, double>("SKU-TARGET", 999.99));
+            carsAndOwners.Remove(car1);
 
-            var stopwatch = new Stopwatch();
-            
-            stopwatch.Start();
-            KeyValuePair<string, double> foundItem = new KeyValuePair<string, double>("NOT-FOUND", 0);
+            Console.WriteLine("\nRemoved car1.");
+            Console.WriteLine($"Contains car2: {carsAndOwners.ContainsKey(car2)}");
 
-            string productName = "SKU-TARGET";
-            int index = Search(productList, productName);
-            foundItem = productList[index];
-            
-
-            stopwatch.Stop();
-
-            Console.WriteLine($"Найден товар: {foundItem.Key} с ценой {foundItem.Value}");
-            Console.WriteLine($"Время поиска: {stopwatch.Elapsed.TotalMilliseconds} мс\n");
-
-            Console.WriteLine("Тестируем Dictionary");
-            var productDictionary = new Dictionary<string, double>();
-            for (int i = 0; i < 1_000_000; i++) {
-                productDictionary.Add($"SKU-{i}", i * 1.5);
-            }
-            productDictionary.Add("SKU-TARGET", 999.99);
-
-            stopwatch.Restart();
-
-            double price = productDictionary["SKU-TARGET"];
-            stopwatch.Stop();
-
-            Console.WriteLine($"Найден товар: SKU-TARGET с ценой {price}");
-            Console.WriteLine($"Время поиска: {stopwatch.Elapsed.TotalMilliseconds} мс\n");
+            DisplayDictionary(carsAndOwners);
         }
     }
 }
