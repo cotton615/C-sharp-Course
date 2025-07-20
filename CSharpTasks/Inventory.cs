@@ -33,11 +33,19 @@ namespace CSharpTasks {
         }
 
         public void Remove(Item item) {
-            _items.Remove(item);
+            if (item is not null) {
+               _items.Remove(item);
+            } else {
+                throw new ArgumentNullException("Tried to remove NULL Item from the Inventory.");
+            }
         }
 
         public void Add(Item item) {
-            _items.Add(item);
+            if (item is not null) {
+                _items.Add(item);
+            } else {
+                throw new ArgumentNullException("Tried to add NULL Item to the Inventory.");
+            }
         }
 
         public bool HasSpace() { 

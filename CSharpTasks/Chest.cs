@@ -4,11 +4,11 @@ using System.Text;
 namespace CSharpTasks {
     public class Chest {
         private List<Item> chestItems = new List<Item>();
-        public bool isOpened = false;
         public int Capacity {
             get => chestItems.Count;
         }
-        public int MaxCapacity { private get; set; }
+        public int MinCapacity { get; private set; } = 6;
+        public int MaxCapacity { get; private set; }
 
 
         // Constructor
@@ -16,8 +16,16 @@ namespace CSharpTasks {
             chestItems = new List<Item>();
         }
 
-
         // Methods
+        public bool SetMaxCapacity(int MaxChestCapacity) {
+            int minChestCapacity = 6;
+            if (MaxCapacity >= minChestCapacity) {
+                this.MaxCapacity = MaxChestCapacity;
+                return true;
+            }
+            return false;
+        }
+
         public override string ToString() {
             if (chestItems.Count == 0) {
                 return "Сундук пуст.";
@@ -32,7 +40,6 @@ namespace CSharpTasks {
             return builder.ToString();
         }
 
-        // These two methods are made solely for the intro of the game
         public void PutInChest(Item item) {
             chestItems.Add(item);
         }
@@ -40,6 +47,7 @@ namespace CSharpTasks {
         public void TakeFromChest(Item item) {
             chestItems.Remove(item);
         }
+
         public bool HasSpace() {
             if (Capacity == MaxCapacity) {
                 return false;
@@ -47,7 +55,6 @@ namespace CSharpTasks {
 
             return true;
         }
-
         public Item this[int index] {
             get {
                 if ((index >= 1) && (index <= chestItems.Count)) {
