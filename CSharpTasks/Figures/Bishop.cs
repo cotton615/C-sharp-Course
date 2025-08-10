@@ -1,13 +1,19 @@
-﻿namespace CSharpTasks {
+﻿namespace CSharpTasks.Figures {
     public class Bishop : ChessPiece {
         public Bishop(string name, ChessPieceColor color) : base(name, color) {
         }
 
-        public override bool IsValidMove(Cell[,] board, (int x, int y) fromCoordinate, (int x, int y) toCoordinate) {
-            int fromX = fromCoordinate.x;
-            int fromY = fromCoordinate.y;
-            int toX = toCoordinate.x;
-            int toY = toCoordinate.y;
+        protected override bool NeedsClearPath => true;
+
+        public override bool IsValidMove(Cell[,] board, (int x, int y) fromCoordinates, (int x, int y) toCoordinates) {
+            if (NeedsClearPath && !IsPathClear(board, fromCoordinates, toCoordinates)) {
+                return false;
+            }
+
+            int fromX = fromCoordinates.x;
+            int fromY = fromCoordinates.y;
+            int toX = toCoordinates.x;
+            int toY = toCoordinates.y;
 
             int dx = toX - fromX;
             int dy = toY - fromY;

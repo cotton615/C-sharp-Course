@@ -1,40 +1,23 @@
-﻿namespace CSharpTasks {
+﻿using CSharpTasks.Figures;
+
+namespace CSharpTasks {
     public static class PieceFactory {
-        public static ChessPiece Create(char symbol) {
-            ChessPieceColor color;
-            string name;
+        private static readonly Dictionary<ChessPieceType, Func<ChessPieceColor, ChessPiece>> _factories = 
+            new Dictionary<ChessPieceType, Func<ChessPieceColor, ChessPiece>> {
+            { ChessPieceType.Rook, color => new Rook("Rook", color) },
+            { ChessPieceType.Pawn, color => new Pawn("Pawn", color) },
+            { ChessPieceType.Knight, color => new Knight("Knight", color) },
+            { ChessPieceType.Bishop, color => new Bishop("Bishop", color) },
+            { ChessPieceType.Queen, color => new Queen("Queen", color) },
+            { ChessPieceType.King, color => new King("King", color) }
+        };
 
-            if (char.IsUpper(symbol)) {
-                color = ChessPieceColor.White;
-            } else {
-                color = ChessPieceColor.Black;
-                symbol = char.ToUpperInvariant(symbol);
+        public static ChessPiece Create(ChessPieceType pieceType, ChessPieceColor color) {
+            if (_factories.TryGetValue(pieceType, out var factory)) {
+                return factory(color);
             }
 
-            switch (symbol) {
-                case 'R':
-                    name = "Rook";
-                    return new Rook(name, color);
-                case 'P':
-                    name = "Pawn";
-                    return new Pawn(name, color);
-                case 'N':
-                    name = "Knight";
-                    return new Knight(name, color);
-                case 'B':
-                    name = "Bishop";
-                    return new Bishop(name, color);
-                case 'Q':
-                    name = "Queen";
-                    return new Queen(name, color);
-                case 'K':
-                    name = "King";
-                    return new King(name, color);
-                default:
-                    throw new ArgumentException($"PieceFactory: Unknown piece symbol: {symbol}");
-                }
-            }
+            throw new ArgumentException($"Unable to create chess piece with unknown pieceType: {pieceType}");
         }
     }
-
-
+}

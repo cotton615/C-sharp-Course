@@ -1,13 +1,12 @@
-﻿
-namespace CSharpTasks {
+﻿namespace CSharpTasks.Figures {
     public static class ChessSymbols {
         public static readonly Dictionary<(string name, ChessPieceColor color), char> chessPieceSymbols = new Dictionary<(string name, ChessPieceColor color), char>() {
-            {("Pawn",   ChessPieceColor.White), 'P'}, // Ладья
-            {("Rook",   ChessPieceColor.White), 'R'}, // Конь
-            {("Knight", ChessPieceColor.White), 'N'}, // Слон 
-            {("Bishop", ChessPieceColor.White), 'B'}, // Ферзь
-            {("Queen",  ChessPieceColor.White), 'Q'}, // Король
-            {("King",   ChessPieceColor.White), 'K'}, // Пешка
+            {("Pawn",   ChessPieceColor.White), 'P'}, // Пешка
+            {("Rook",   ChessPieceColor.White), 'R'}, // Ладья
+            {("Knight", ChessPieceColor.White), 'N'}, // Конь
+            {("Bishop", ChessPieceColor.White), 'B'}, // Слон
+            {("Queen",  ChessPieceColor.White), 'Q'}, // Королева или Ферзь
+            {("King",   ChessPieceColor.White), 'K'}, // Король
             // Верхний регистр - БЕЛЫЕ
 
             // Нижний регистр - ЧЁРНЫЕ
